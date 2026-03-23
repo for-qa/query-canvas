@@ -1,0 +1,469 @@
+* {
+  box-sizing: border-box;
+}
+
+:root {
+  --control-height: 46px;
+}
+
+.app {
+  padding: 2rem 1rem 4rem;
+}
+
+.appHeader {
+  max-width: 1100px;
+  margin: 0 auto 2rem;
+  text-align: center;
+}
+
+.appHeader h1 {
+  margin-bottom: 0.5rem;
+}
+
+.appHeader p {
+  font-size: 1.1rem;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.grid {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+@media (max-width: 980px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.panel {
+  background: var(--panel-bg);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--panel-border);
+  border-radius: 20px;
+  box-shadow: var(--shadow-lg);
+  padding: 1.5rem;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.panel:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 20px 40px -5px rgba(0, 0, 0, 0.6);
+}
+
+.panel h2 {
+  margin: 0 0 1.2rem;
+  font-size: 1.4rem;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  width: 100%;
+  margin-bottom: 1rem;
+}
+
+.field span {
+  color: var(--text-h);
+  font-size: 0.85rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  font-family: var(--heading);
+}
+
+.field input,
+.field select,
+.field textarea {
+  width: 100%;
+  min-height: var(--control-height);
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--input-border);
+  border-radius: 12px;
+  background: var(--input-bg);
+  font-family: var(--sans);
+  font-size: 0.95rem;
+  color: var(--text-h);
+  transition: all 0.2s ease;
+}
+
+.field select {
+  /* Reserve room for the native arrow so text and icon never overlap. */
+  padding-right: 2.4rem;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 20 20' fill='none'%3E%3Cpath d='M5 7.5L10 12.5L15 7.5' stroke='%23f8fafc' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.8rem center;
+  background-size: 0.9rem;
+}
+
+.field select::-ms-expand {
+  display: none;
+}
+
+.field input:focus,
+.field select:focus,
+.field textarea:focus {
+  outline: none;
+  border-color: var(--input-focus);
+  box-shadow: 0 0 0 3px rgba(192, 132, 252, 0.2);
+  background: rgba(30, 41, 59, 0.8);
+}
+
+.field input::placeholder,
+.field select::placeholder,
+.field textarea::placeholder {
+  color: rgba(255, 255, 255, 0.3);
+}
+
+.field textarea {
+  resize: vertical;
+  font-family: var(--mono);
+  min-height: 80px;
+  line-height: 1.5;
+}
+
+.field.small input,
+.field.small select {
+  padding: 0.6rem 0.8rem;
+}
+
+.field.small select {
+  padding-right: 2rem;
+  background-position: right 0.65rem center;
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: flex-start;
+}
+
+.row .field {
+  flex: 1 1 200px;
+  margin-bottom: 0;
+}
+
+.checkbox {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1.8rem;
+  cursor: pointer;
+  user-select: none;
+  color: var(--text);
+  font-size: 0.9rem;
+  transition: color 0.2s;
+}
+
+.checkbox:hover {
+  color: var(--text-h);
+}
+
+.checkbox input {
+  width: 1.1rem;
+  height: 1.1rem;
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+
+.whereHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 1.5rem 0 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--panel-border);
+}
+
+.whereHeader h3 {
+  font-size: 1.1rem;
+  margin: 0;
+  color: var(--text-h);
+}
+
+.whereHeader button {
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  border: 1px solid var(--input-border);
+  background: rgba(255, 255, 255, 0.05);
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 0.85rem;
+  color: var(--text-h);
+  transition: all 0.2s;
+}
+
+.whereHeader button:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: var(--accent);
+}
+
+.hint {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  font-style: italic;
+  margin-bottom: 1rem;
+}
+
+.conditions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.conditionRow {
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid var(--panel-border);
+  border-radius: 12px;
+  padding: 1rem;
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  transition: border-color 0.2s;
+}
+
+.conditionRow:hover {
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.conditionRow .field {
+  margin-bottom: 0;
+}
+
+.divider {
+  height: 1px;
+  background: var(--panel-border);
+  margin: 1.5rem 0;
+}
+
+.actions {
+  display: flex;
+  gap: 0.75rem;
+  margin: 1rem 0;
+}
+
+button {
+  border: 0;
+  cursor: pointer;
+  font-family: var(--sans);
+  transition: all 0.2s ease;
+}
+
+button:active {
+  transform: scale(0.98);
+}
+
+.secondary {
+  padding: 0.75rem 1.25rem;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text-h);
+  font-weight: 600;
+  font-size: 0.95rem;
+  border: 1px solid var(--panel-border);
+}
+
+.secondary:hover {
+  background: rgba(255, 255, 255, 0.15);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.copy {
+  display: block;
+  width: 100%;
+  margin-top: 1rem;
+  padding: 0.85rem;
+  border-radius: 12px;
+  background: var(--accent-gradient);
+  color: white;
+  font-weight: 600;
+  font-size: 1rem;
+  letter-spacing: 0.02em;
+  box-shadow: 0 4px 15px rgba(192, 132, 252, 0.4);
+}
+
+.copy:hover:not(:disabled) {
+  box-shadow: 0 6px 20px rgba(192, 132, 252, 0.6);
+  transform: translateY(-1px);
+}
+
+.copy:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}
+
+.danger {
+  margin-left: auto;
+  padding: 0.6rem 1rem;
+  border-radius: 8px;
+  border: 1px solid var(--danger-border);
+  background: var(--danger-bg);
+  color: var(--danger-text);
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+.danger:hover {
+  background: rgba(239, 68, 68, 0.2);
+  border-color: rgba(239, 68, 68, 0.5);
+}
+
+.sqlTableEditorPanel {
+  width: 100%;
+  max-width: none;
+  display: block;
+}
+
+.sqlTableEditorTop {
+  display: block;
+}
+
+.sqlTableRowsSection {
+  display: block;
+  margin-bottom: 1rem;
+}
+
+.sqlTableEditorBottom {
+  display: block;
+}
+
+.sqlTableEditorBottom .field textarea {
+  min-height: 140px;
+  max-height: none;
+}
+
+.tableContainer {
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: visible;
+  border: 1px solid var(--panel-border);
+  border-radius: 12px;
+  background: rgba(15, 23, 42, 0.35);
+}
+
+.dataGrid {
+  width: 100%;
+  min-width: max-content;
+  border-collapse: collapse;
+  min-width: 640px;
+}
+
+.dataGrid th,
+.dataGrid td {
+  border-bottom: 1px solid var(--panel-border);
+  padding: 0.5rem;
+  vertical-align: middle;
+  font-family: var(--sans);
+  min-width: 180px;
+}
+
+.dataGrid th:last-child,
+.dataGrid td:last-child {
+  min-width: 120px;
+}
+
+.dataGrid th {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.dataGrid td input,
+.dataGrid th input {
+  width: 100%;
+  border: 1px solid var(--input-border);
+  border-radius: 8px;
+  background: var(--input-bg);
+  color: var(--text-h);
+  font-family: var(--sans);
+  padding: 0.5rem 0.6rem;
+  font-size: 0.9rem;
+}
+
+.gridHeaderCell {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.gridHeaderCell .danger {
+  margin-left: 0;
+  min-width: 2rem;
+  padding: 0.4rem 0.55rem;
+}
+
+.filePicker {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-height: var(--control-height);
+  padding: 0 0.45rem;
+  border: 1px solid var(--input-border);
+  border-radius: 12px;
+  background: var(--input-bg);
+}
+
+.fileInputHidden {
+  display: none;
+}
+
+.fileNameText {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.filePickerButton {
+  padding: 0.42rem 0.78rem;
+  border-radius: 9px;
+  font-size: 0.88rem;
+  line-height: 1.1;
+  white-space: nowrap;
+}
+
+.sqlQueryBuilderPanel .row {
+  align-items: flex-end;
+}
+
+.sqlQueryBuilderPanel .field {
+  gap: 0.3rem;
+}
+
+.sqlQueryBuilderPanel .field.small {
+  gap: 0.25rem;
+}
+
+.sqlQueryBuilderPanel > .field {
+  gap: 0.25rem;
+}
+
+.sqlQueryBuilderPanel .sqlQueryLimitRow {
+  margin-top: 0.75rem;
+}
+
+.sqlQueryBuilderPanel .sqlQueryOutputField {
+  margin-top: 0.75rem;
+}
+
+.sqlQueryBuilderPanel .row .field > span,
+.sqlQueryBuilderPanel .conditionRow .field > span {
+  min-height: 1.2rem;
+  display: inline-flex;
+  align-items: center;
+}
+
