@@ -2,6 +2,7 @@
   "name": "query-canvas",
   "private": true,
   "version": "0.0.0",
+  "author": "for-qa",
   "license": "MIT",
   "type": "module",
   "scripts": {

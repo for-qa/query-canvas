@@ -65,4 +65,14 @@ npm run lint
 
 ## License
 
-This project is licensed under the [MIT License](LICENSE).
+This project is licensed under the [MIT License](LICENSE). 
+
+Under the MIT License, anyone who uses, copies, or modifies this code must include your original copyright notice, ensuring you always receive credit for your work.
+
+## Support & Recognition
+
+If you find this project helpful and want to support its continued development, the best way is through **recognition**:
+
+1. **Attribution:** Please keep the original copyright notices intact in the code. If you use this tool or its code in a public project, a shoutout or a link back to this repository is highly appreciated!
+2. **Contribute Code:** We welcome pull requests! Check out our [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines on how to help build this tool.
+3. **Star the Repo:** Giving the project a ⭐️ on GitHub helps others find it and gives the author recognition.
