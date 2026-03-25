@@ -41,6 +41,12 @@ A small **React + TypeScript + Vite** web app for:
 - Edit imported values in tabular mode and regenerate updated SQL
 - Download generated SQL as a `.sql` file
 
+## 🛠️ Tech Stack
+
+- **Frontend Framework**: React.js 19 powered by Vite
+- **Language**: TypeScript
+- **Routing**: React Router DOM (v7)
+
 ## Run locally
 
 ```bash
@@ -48,7 +54,7 @@ npm install
 npm run dev
 ```
 
-Vite will print the local URL (typically `http://localhost:5173/`).
+Vite will print the local URL (typically `http://localhost:8104/`).
 
 ## Build / preview production build
 
