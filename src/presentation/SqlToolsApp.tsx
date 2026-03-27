@@ -61,9 +61,9 @@ export function SqlToolsApp() {
 
   return (
     <section className="panel sqlToolsPanel">
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-        <h2>SQL Power Tools</h2>
-        <div className="tabs" style={{ background: 'var(--input-bg)', padding: '0.2rem', borderRadius: '8px' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '2rem', marginBottom: '2rem', flexWrap: 'wrap' }}>
+        <h2 style={{ margin: 0 }}>SQL Power Tools</h2>
+        <div className="tabs" style={{ background: 'var(--input-bg)', padding: '0.3rem', borderRadius: '12px', display: 'flex', gap: '0.3rem' }}>
           <button 
             type="button" 
             className={mode === 'formatter' ? 'copy' : 'secondary'} 
@@ -161,17 +161,23 @@ export function SqlToolsApp() {
             }}>
               <h4>Comparison Results</h4>
               <div style={{ marginTop: '1rem', fontFamily: 'monospace', fontSize: '0.9rem' }}>
-                {diffOutput.map((d, i) => (
-                  <div key={i} style={{ 
-                    color: d.startsWith('➕') ? '#a6e22e' : d.startsWith('➖') ? '#f92672' : 'inherit',
-                    marginBottom: '0.4rem',
-                    padding: '0.4rem',
-                    background: d.startsWith('✅') ? 'rgba(166, 226, 46, 0.1)' : 'transparent',
-                    borderRadius: '4px'
-                  }}>
-                    {d}
-                  </div>
-                ))}
+                {diffOutput.map((d) => {
+                  let color = 'inherit';
+                  if (d.startsWith('➕')) color = '#a6e22e';
+                  else if (d.startsWith('➖')) color = '#f92672';
+                  
+                  return (
+                    <div key={d} style={{ 
+                      color,
+                      marginBottom: '0.4rem',
+                      padding: '0.4rem',
+                      background: d.startsWith('✅') ? 'rgba(166, 226, 46, 0.1)' : 'transparent',
+                      borderRadius: '4px'
+                    }}>
+                      {d}
+                    </div>
+                  );
+                })}
               </div>
             </div>
           )}

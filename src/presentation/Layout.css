@@ -31,7 +31,8 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 0.75rem;
+  gap: 1.5rem;
+  flex-wrap: wrap;
 }
 
 .brand {
@@ -60,16 +61,16 @@
 .tabs {
   display: flex;
   align-items: center;
-  gap: 0.25rem;
+  gap: 0.3rem;
   padding: 0.3rem;
   border-radius: 12px;
   border: 1px solid var(--panel-border);
   background: rgba(30, 41, 59, 0.35);
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: none; /* hide scrollbar on Firefox */
-  flex: 1 1 0;
-  min-width: 0;
+  overflow: visible;
+  flex: 1 1 auto;
+  flex-wrap: wrap;
+  justify-content: center;
+  min-width: 200px;
 }
 
 :root[data-theme="light"] .tabs {
@@ -171,7 +172,7 @@
 /* ── Main content ─────────────────────────────────────── */
 .main-content {
   flex: 1;
-  padding: 1.5rem 2rem;
+  padding: 1.5rem 2.5rem;
   min-height: 0;
   overflow: auto;
   display: flex;
@@ -179,52 +180,64 @@
   align-items: stretch;
 }
 
+@media (max-width: 600px) {
+  .main-content {
+    padding: 0.75rem 0.5rem;
+  }
+}
+
 .main-content > * {
   width: 100%;
-  height: auto;
-  min-height: 0;
-  overflow: visible;
-}
-
-.main-content > .sqlTableEditorPanel {
   flex: 0 0 auto;
   overflow: visible;
-}
-
-.main-content > .sqlQueryBuilderPanel {
-  flex: 0 0 auto;
-  overflow: visible;
+  min-height: min-content;
+  display: block; /* Ensure it behaves as a block to grow vertically */
 }
 
 /* ── Responsive ───────────────────────────────────────── */
-@media (max-width: 900px) {
+@media (max-width: 1024px) {
   .topbarInner {
-    flex-wrap: wrap;
-    gap: 0.5rem;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
   }
 
   .brand {
-    flex: 1 1 auto;
+    text-align: center;
   }
 
   .tabs {
-    order: 3;
     width: 100%;
-    flex: 0 0 100%;
+    margin: 0.5rem 0;
+  }
+
+  .topbarControls {
+    justify-content: center;
+    width: 100%;
   }
 }
 
 @media (max-width: 480px) {
   .topbar {
-    padding: 0.65rem 1rem;
+    padding: 0.75rem 1rem;
   }
 
   .brandSubtitle {
     display: none;
   }
 
+  .tabs {
+    padding: 0.35rem;
+    gap: 0.3rem;
+  }
+
   .tab {
-    font-size: 0.75rem;
-    padding: 0.4rem 0.6rem;
+    font-size: 0.74rem;
+    padding: 0.4rem 0.5rem;
+    flex: 1 1 40%; /* Each tab takes up around half on mobile */
+  }
+
+  .topbarControls {
+    gap: 0.4rem;
   }
 }

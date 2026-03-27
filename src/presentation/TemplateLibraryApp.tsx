@@ -31,12 +31,10 @@ export function TemplateLibraryApp() {
     input.onchange = (e) => {
       const file = (e.target as HTMLInputElement).files?.[0]
       if (!file) return
-      const reader = new FileReader()
-      reader.onload = (re) => {
+      void (async () => {
         try {
-          const result = re.target?.result
-          if (typeof result !== 'string') return
-          const imported = JSON.parse(result)
+          const text = await file.text()
+          const imported = JSON.parse(text)
           if (Array.isArray(imported)) {
             let count = 0
             for (const t of imported) {
@@ -51,8 +49,7 @@ export function TemplateLibraryApp() {
         } catch {
           alert('Failed to import templates: Invalid JSON file.')
         }
-      }
-      reader.readAsText(file)
+      })()
     }
     input.click()
   }, [saveTemplate])
@@ -89,10 +86,10 @@ export function TemplateLibraryApp() {
       <div style={{ display: 'flex', gap: '1rem', marginBottom: '1.5rem', flexWrap: 'wrap', alignItems: 'center' }}>
         <div style={{ flex: 1, minWidth: '300px' }}>
           <input 
+            className="searchInput"
             value={searchTerm} 
             onChange={(e) => setSearchTerm(e.target.value)} 
             placeholder="Search templates by name, tool or code..."
-            style={{ padding: '0.75rem', fontSize: '1rem', width: '100%' }}
           />
         </div>
         <div className="tabs" style={{ background: 'var(--input-bg)', padding: '0.25rem', borderRadius: '10px', display: 'flex', gap: '0.25rem' }}>
@@ -124,6 +121,9 @@ export function TemplateLibraryApp() {
               transition: 'transform 0.2s, box-shadow 0.2s',
               cursor: 'pointer'
             }}
+            role="button"
+            tabIndex={0}
+            onKeyDown={(e) => { if (e.key === 'Enter') e.currentTarget.click() }}
             onMouseEnter={(e) => {
               e.currentTarget.style.transform = 'translateY(-4px)'
               e.currentTarget.style.boxShadow = '0 8px 30px rgba(0,0,0,0.2)'
@@ -152,10 +152,12 @@ export function TemplateLibraryApp() {
               <div style={{ padding: '1rem', flex: 1, maxHeight: '180px', overflowY: 'auto', background: 'var(--code-bg)' }}>
                 <SqlHighlighter code={t.sql} />
               </div>
-              <div style={{ padding: '1rem', background: 'rgba(0,0,0,0.15)', display: 'flex', gap: '0.5rem' }}>
-                <button type="button" className="copy" onClick={() => handleCopy(t.sql)} style={{ flex: 1, padding: '0.5rem' }}>Copy SQL</button>
-                <button type="button" className="secondary" onClick={() => downloadSql(t.sql, t.name)} style={{ flex: 'none', padding: '0.5rem' }} title="Download as .sql">⬇</button>
-                <button type="button" className="danger" onClick={() => deleteTemplate(t.id)} style={{ flex: 'none', padding: '0.5rem' }} title="Remove template">🗑</button>
+              <div style={{ padding: '1rem', background: 'rgba(0,0,0,0.15)', display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                <button type="button" className="copy" onClick={() => handleCopy(t.sql)} style={{ flex: '1 1 auto', minWidth: '120px', padding: '0.6rem' }}>Copy SQL</button>
+                <div style={{ display: 'flex', gap: '0.5rem', flex: '0 0 auto' }}>
+                  <button type="button" className="secondary" onClick={() => downloadSql(t.sql, t.name)} style={{ flex: 'none', padding: '0.6rem', minWidth: '2.5rem' }} title="Download as .sql">⬇</button>
+                  <button type="button" className="danger" onClick={() => deleteTemplate(t.id)} style={{ flex: 'none', padding: '0.6rem', minWidth: '2.5rem' }} title="Remove template">🗑</button>
+                </div>
               </div>
             </div>
           ))}

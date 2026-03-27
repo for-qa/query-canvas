@@ -24,6 +24,7 @@
   --scrollbar-thumb: linear-gradient(180deg, rgba(192, 132, 252, 0.9), rgba(59, 130, 246, 0.9));
   --scrollbar-thumb-hover: linear-gradient(180deg, rgba(216, 180, 254, 0.98), rgba(96, 165, 250, 0.98));
   --theme-icon: '☀️';
+  --text-placeholder: rgba(255, 255, 255, 0.3);
 
   --sans: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   --heading: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
@@ -54,6 +55,7 @@
   --scrollbar-thumb: linear-gradient(180deg, rgba(124, 58, 237, 0.65), rgba(37, 99, 235, 0.65));
   --scrollbar-thumb-hover: linear-gradient(180deg, rgba(109, 40, 217, 0.9), rgba(29, 78, 216, 0.9));
   --theme-icon: '🌙';
+  --text-placeholder: rgba(0, 0, 0, 0.25);
 }
 
 :root[data-theme="light"] body {

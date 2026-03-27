@@ -208,13 +208,13 @@ export function DatasetFormatterApp({ useCases }: { readonly useCases: AppUseCas
           rows={6}
         />
       </label>
-      <div style={{ display: 'flex', gap: '0.5rem', marginTop: '1rem', alignItems: 'stretch' }}>
+      <div style={{ display: 'flex', gap: '0.5rem', marginTop: '1rem', alignItems: 'stretch', flexWrap: 'wrap' }}>
         <button
           type="button"
           className="copy"
           onClick={() => navigator.clipboard.writeText(datasetOutput)}
           disabled={!datasetOutput}
-          style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', width: 'auto', margin: 0 }}
+          style={{ flex: '1 1 200px', display: 'flex', alignItems: 'center', justifyContent: 'center', width: 'auto', margin: 0, padding: '0.75rem' }}
         >
           Copy Output
         </button>
@@ -231,7 +231,7 @@ export function DatasetFormatterApp({ useCases }: { readonly useCases: AppUseCas
             URL.revokeObjectURL(url)
           }}
           disabled={!datasetOutput}
-          style={{ flex: 1 }}
+          style={{ flex: '1 1 auto', padding: '0.75rem' }}
         >
           ⬇ Download .txt
         </button>
