@@ -109,7 +109,7 @@ export function SqlInsertBuilderApp({ useCases }: { readonly useCases: AppUseCas
       <h2>Batch INSERT Builder</h2>
       <p className="hint">Paste a dataset (from Excel or CSV) to generate massive <code>INSERT</code> workloads instantly.</p>
 
-      <div className="row">
+      <div className="row" style={{ marginBottom: '1.25rem' }}>
         <label className="field">
           <span>Table Name</span>
           <input value={tableName} onChange={(e) => setTableName(e.target.value)} placeholder="e.g. users" />

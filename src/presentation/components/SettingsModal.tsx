@@ -36,17 +36,28 @@ export function SettingsModal({ onClose }: { readonly onClose: () => void }) {
       ref={dialogRef}
       onCancel={onClose}
       style={{
-        position: 'fixed', top: '50%', left: '50%', zIndex: 1000,
+        padding: 0,
+        border: 'none',
+        background: 'transparent',
+        overflow: 'visible',
+      }}
+    >
+      <div style={{
+        position: 'fixed',
+        top: '50%',
+        left: '50%',
         transform: 'translate(-50%, -50%)',
         width: 'min(520px, 92vw)',
         background: 'var(--panel-bg)',
+        backdropFilter: 'blur(20px)',
+        WebkitBackdropFilter: 'blur(20px)',
         border: '1px solid var(--panel-border)',
-        borderRadius: '20px',
-        boxShadow: '0 25px 60px rgba(0,0,0,0.6)',
-        padding: '2rem',
+        borderRadius: '24px',
+        boxShadow: '0 25px 80px rgba(0,0,0,0.5)',
+        padding: '2.5rem',
         color: 'var(--text-h)',
-      }}
-    >
+        zIndex: 1001,
+      }}>
       {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1.5rem' }}>
         <div>
@@ -163,6 +174,7 @@ export function SettingsModal({ onClose }: { readonly onClose: () => void }) {
         >
           Cancel
         </button>
+      </div>
       </div>
     </dialog>
   )

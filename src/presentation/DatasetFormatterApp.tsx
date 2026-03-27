@@ -83,7 +83,7 @@ export function DatasetFormatterApp({ useCases }: { readonly useCases: AppUseCas
         />
       </label>
 
-      <div className="row">
+      <div className="row" style={{ marginBottom: '1.25rem' }}>
         <label className="field">
           <span>Delimiter</span>
           <select

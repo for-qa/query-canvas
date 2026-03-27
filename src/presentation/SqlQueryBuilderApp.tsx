@@ -175,7 +175,16 @@ function AiAssistant({ prompt, setPrompt, onGenerate, isGenerating, promptRef, h
             value={prompt}
             onChange={(e) => { setPrompt(e.target.value); if (error && onClearError) onClearError(); }}
             placeholder={hasApiKey ? "Ask AI: 'Get users who joined last month'..." : "Mock Mode: 'Get users', 'Get products', 'Get orders'..."}
-            style={{ width: '100%', background: 'var(--input-bg)', border: '1px solid var(--panel-border)', padding: '0.6rem 1rem', borderRadius: '8px' }}
+            style={{ 
+              width: '100%', 
+              background: 'var(--input-bg)', 
+              border: '1px solid var(--panel-border)', 
+              padding: '0.75rem 1rem', 
+              borderRadius: '10px',
+              color: 'var(--text-h)',
+              fontFamily: 'var(--font-main, "Inter", sans-serif)',
+              fontSize: '0.95rem'
+            }}
             onKeyDown={(e) => { 
                 if (e.key === 'Enter') onGenerate()
             }}

@@ -6,6 +6,7 @@ import './Layout.css'
 import { useTheme } from './ThemeContext'
 import { useState } from 'react'
 import { SettingsModal } from './components/SettingsModal'
+import { GuideModal } from './components/GuideModal'
 import { useAiSettings } from '../application/useAiSettings'
 
 export function Layout() {
@@ -13,6 +14,7 @@ export function Layout() {
   const { dialect, setDialect } = useDialect()
   const { hasKey } = useAiSettings()
   const [showSettings, setShowSettings] = useState(false)
+  const [showGuide, setShowGuide] = useState(false)
 
   return (
     <div className="dashboard">
@@ -76,6 +78,16 @@ export function Layout() {
               {theme === 'dark' ? '☀️' : '🌙'}
             </button>
 
+            <button
+              type="button"
+              className="themeToggle"
+              aria-label="Help Guide"
+              title="How to use this page"
+              onClick={() => setShowGuide(true)}
+            >
+              ℹ️
+            </button>
+
             {/* Settings button */}
             <button
               type="button"
@@ -102,6 +114,7 @@ export function Layout() {
       </main>
 
       {showSettings && <SettingsModal onClose={() => setShowSettings(false)} />}
+      {showGuide && <GuideModal onClose={() => setShowGuide(false)} />}
     </div>
   )
 }

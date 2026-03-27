@@ -167,3 +167,14 @@ code {
 *::-webkit-scrollbar-corner {
   background: transparent;
 }
+
+/* ── Native Dialog Backdrop ─────────────────────────────────────────────── */
+dialog::backdrop {
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+:root[data-theme="light"] dialog::backdrop {
+  background: rgba(15, 23, 42, 0.25);
+}
