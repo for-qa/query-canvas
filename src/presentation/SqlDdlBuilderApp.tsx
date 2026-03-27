@@ -15,6 +15,8 @@ import { downloadSql } from '../application/downloadSql'
 import { useQueryHistory } from '../application/useQueryHistory'
 import { SqlHighlighter } from './components/SqlHighlighter'
 import { parseCreateTable } from '../application/schemaParser'
+import { MermaidDiagram } from './components/MermaidDiagram'
+import { useSavedTemplates } from '../application/useSavedTemplates'
 
 type ColumnDraft = SqlCreateTableColumn & { id: string }
 type DdlMode = 'table' | 'database' | 'drop-table' | 'drop-database' | 'truncate'
@@ -65,6 +67,7 @@ export function SqlDdlBuilderApp({ useCases }: { readonly useCases: AppUseCases 
   usePageTitle('DDL Builder')
   const { dialect } = useDialect()
   const { addEntry } = useQueryHistory()
+  const { saveTemplate } = useSavedTemplates()
   const [mode, setMode] = useState<DdlMode>('table')
   
   const [importString, setImportString] = useState('')
@@ -94,6 +97,7 @@ export function SqlDdlBuilderApp({ useCases }: { readonly useCases: AppUseCases 
   ])
   const [tableIfNotExists, setTableIfNotExists] = useState(true)
   const [tableIncludeSemicolon, setTableIncludeSemicolon] = useState(true)
+  const [showErd, setShowErd] = useState(false)
 
   // ── CREATE DATABASE state ───────────────────────────────────────────────────
   const [dbName, setDbName] = useState('my_database')
@@ -153,6 +157,19 @@ export function SqlDdlBuilderApp({ useCases }: { readonly useCases: AppUseCases 
       dropDbName, dropDbIfExists, dropDbSemicolon,
       truncateName, truncateSemicolon, dialect, useCases])
 
+  const mermaidChart = useMemo(() => {
+    if (mode !== 'table' || !tableName.trim()) return ''
+    let chart = 'erDiagram\n'
+    chart += `    ${tableName.replaceAll(/\s+/g, '_')} {\n`
+    columns.filter(c => c.name.trim()).forEach(col => {
+      const typeStr = col.length ? `${col.type}_${col.length}` : col.type
+      const pk = col.primaryKey ? 'PK' : ''
+      chart += `        ${col.name.replaceAll(/\s+/g, '_')} ${typeStr.replace(/[^a-zA-Z0-9_]/g, '')} ${pk}\n`
+    })
+    chart += '    }\n'
+    return chart
+  }, [mode, tableName, columns])
+
   const isDestructive = mode === 'drop-table' || mode === 'drop-database' || mode === 'truncate'
 
   const handleCopy = useCallback(() => {
@@ -163,6 +180,16 @@ export function SqlDdlBuilderApp({ useCases }: { readonly useCases: AppUseCases 
     void navigator.clipboard.writeText(sqlOutput)
     addEntry(sqlOutput, MODE_LABELS[mode])
   }, [sqlOutput, addEntry, mode, isDestructive])
+
+  const handleSaveTemplate = useCallback(() => {
+    if (!sqlOutput) return
+    const defaultTemplateName = mode === 'table' ? `CREATE TABLE ${tableName}` : `${MODE_LABELS[mode]}`
+    const name = globalThis.prompt('Enter a name for this template:', defaultTemplateName)
+    if (name) {
+      saveTemplate(name, sqlOutput, 'DDL Builder')
+      alert('Template saved to library!')
+    }
+  }, [sqlOutput, tableName, mode, saveTemplate])
 
   const handleDownload = useCallback(() => {
     if (isDestructive && !globalThis.confirm('This is a destructive operation. Are you sure you want to download this SQL?')) {
@@ -309,13 +336,35 @@ export function SqlDdlBuilderApp({ useCases }: { readonly useCases: AppUseCases 
 
       {/* ── Output ───────────────────────────────────────── */}
       <div className="divider" />
+      
+      {mode === 'table' && (
+        <div style={{ marginBottom: '1.5rem' }}>
+          <label className="checkbox">
+            <input type="checkbox" checked={showErd} onChange={(e) => setShowErd(e.target.checked)} />
+            <span>Show ERD Visual Preview</span>
+          </label>
+          {showErd && mermaidChart && (
+            <div style={{ marginTop: '0.5rem' }}>
+              <MermaidDiagram chart={mermaidChart} />
+            </div>
+          )}
+        </div>
+      )}
+
       <div className="field sqlQueryOutputField">
         <span>Generated SQL</span>
         <SqlHighlighter code={sqlOutput} />
       </div>
-      <div style={{ display: 'flex', gap: '0.5rem' }}>
-        <button type="button" className="copy" onClick={handleCopy} disabled={!sqlOutput} style={{ flex: 1 }}>Copy SQL</button>
-        <button type="button" className="secondary" onClick={handleDownload} disabled={!sqlOutput} style={{ flex: 'none' }}>⬇ Download .sql</button>
+      <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+        <button type="button" className="copy" onClick={handleCopy} disabled={!sqlOutput} style={{ flex: 1 }}>
+          Copy SQL
+        </button>
+        <button type="button" className="secondary" onClick={handleSaveTemplate} disabled={!sqlOutput} style={{ flex: 1 }}>
+          📁 Save Template
+        </button>
+        <button type="button" className="secondary" onClick={handleDownload} disabled={!sqlOutput} style={{ flex: 1 }}>
+          ⬇ Download .sql
+        </button>
       </div>
     </section>
   )

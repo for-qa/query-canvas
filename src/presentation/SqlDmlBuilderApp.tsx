@@ -8,6 +8,7 @@ import { usePageTitle } from '../application/usePageTitle'
 import { downloadSql } from '../application/downloadSql'
 import { useQueryHistory } from '../application/useQueryHistory'
 import { SqlHighlighter } from './components/SqlHighlighter'
+import { useSavedTemplates } from '../application/useSavedTemplates'
 
 type ConditionDraft = Omit<SqlCondition, 'connector'> & { connector: SqlConditionConnector; id: string }
 type SetClauseDraft = { id: string; column: string; value: string }
@@ -31,6 +32,7 @@ function buildConditions(drafts: ConditionDraft[]): SqlCondition[] {
 export function SqlDmlBuilderApp({ useCases }: { readonly useCases: AppUseCases }) {
   usePageTitle('UPDATE / DELETE Builder')
   const { addEntry } = useQueryHistory()
+  const { saveTemplate } = useSavedTemplates()
   const [mode, setMode] = useState<'UPDATE' | 'DELETE'>('UPDATE')
   const [table, setTable] = useState('users')
   const [sqlSets, setSqlSets] = useState<SetClauseDraft[]>([newSet()])
@@ -72,6 +74,15 @@ export function SqlDmlBuilderApp({ useCases }: { readonly useCases: AppUseCases 
     void navigator.clipboard.writeText(sqlOutput)
     addEntry(sqlOutput, `${mode} on ${table.trim() || '?'}`)
   }, [sqlOutput, addEntry, mode, table])
+
+  const handleSaveTemplate = useCallback(() => {
+    if (!sqlOutput) return
+    const name = globalThis.prompt('Enter a name for this template:', `${mode} on ${table.trim() || 'users'}`)
+    if (name) {
+      saveTemplate(name, sqlOutput, 'DML Builder')
+      alert('Template saved to library!')
+    }
+  }, [sqlOutput, table, mode, saveTemplate])
 
   return (
     <section className="panel sqlQueryBuilderPanel" style={{ width: '100%', maxWidth: 'none', margin: '0 auto' }}>
@@ -159,9 +170,10 @@ export function SqlDmlBuilderApp({ useCases }: { readonly useCases: AppUseCases 
         <span>Generated SQL</span>
         <SqlHighlighter code={sqlOutput} />
       </div>
-      <div style={{ display: 'flex', gap: '0.5rem' }}>
+      <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
         <button type="button" className="copy" onClick={handleCopy} disabled={!sqlOutput} style={{ flex: 1 }}>Copy SQL</button>
-        <button type="button" className="secondary" onClick={() => downloadSql(sqlOutput, `dml_${mode.toLowerCase()}_${table || 'table'}`)} disabled={!sqlOutput}>⬇ Download .sql</button>
+        <button type="button" className="secondary" onClick={handleSaveTemplate} disabled={!sqlOutput} style={{ flex: 1 }}>📁 Save Template</button>
+        <button type="button" className="secondary" onClick={() => downloadSql(sqlOutput, `dml_${mode.toLowerCase()}_${table || 'table'}`)} disabled={!sqlOutput} style={{ flex: 1 }}>⬇ Download .sql</button>
       </div>
     </section>
   )

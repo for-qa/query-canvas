@@ -1,81 +1,101 @@
 # QueryCanvas
 
-A small **React + TypeScript + Vite** web app for:
+A comprehensive **visual SQL development suite** built with React + TypeScript + Vite. It is designed to act as your daily toolbox for assembling, designing, modifying, and tracking SQL code without needing to constantly look up syntax or manually escape strings.
 
-- **Dataset Formatter**: paste a column of values and format them into a single line for easy copy/paste into SQL.
-- **SQL Builder**: generate a basic `SELECT` query from form inputs.
+**QueryCanvas** is strictly frontend-only—no database connection is made. All computations happen in your browser, meaning it is 100% secure for your sensitive data and schemas.
 
-## Features
+## ✨ Core Features
 
-### Dataset Formatter
+### 1. SQL Query Builder (SELECT)
+- Visual constructor for `SELECT ... FROM ...` queries.
+- Support for complex `JOIN`s, nested `WHERE` / `HAVING` filters with `AND`/`OR` grouping.
+- Smart handling of `GROUP BY`, `ORDER BY`, `LIMIT`, and `OFFSET`.
+- **AI Assistant**: Real natural language Prompt-to-SQL logic execution powered by **Gemini 2.0 Flash**.
+- **Query History**: Automatically retains and tracks your recent query snapshots.
+- **Shareable Links**: Encode your entire query payload into the URL to share your work with colleagues instantly.
 
-- **Delimiter**: comma, semicolon, tab, pipe, or space
-- **Quote values**: none, single quote (`'value'`), or double quote (`"value"`)
-- **Escape quotes inside values** (useful when your value contains `'` or `"`)
-- **Wrap output**: none, parentheses (`(...)`), or `IN (...)`
-- **Trim whitespace**
-- **Remove empty lines**
-- **Remove duplicates**
-- **Case-insensitive dedupe** (only when “Remove duplicates” is enabled)
-- **Sort ascending (A-Z)**
-- **Copy output** button
+### 2. DDL Builder (Visual Table Designer)
+- **Visual Editor**: Create columns, define types, assign primary keys, constraints, and auto-increments.
+- **Mermaid ERD Visualizer**: Live-rendering Entity-Relationship Diagram preview of your table schema.
+- Automatic identifier quoting based on your selected SQL dialect.
 
-### SQL Builder
+### 3. ALTER TABLE Builder
+- Design destructive schema modifications visually without risking syntax errors.
+- Support for: Add/Drop/Modify Columns, Rename Columns/Tables, Add/Drop Primary/Foreign Keys, and Index Management.
 
-- Build a basic `SELECT ... FROM ...` query
-- Optional **WHERE** conditions (supports common operators like `=`, `!=`, `LIKE`, `IN`, `IS NULL`)
-- Optional **GROUP BY**, **ORDER BY**, **LIMIT**
-- Optional **Quote identifiers**
-- Optional **Include semicolon**
-- **Copy SQL** button
+### 4. Batch INSERT Builder
+- Paste directly from Excel/CSV and intelligently map to SQL columns.
+- **Auto-delimiter detection** (comma, tab, pipe, semicolon).
+- Choose between **"Multiple"** (`INSERT ...; INSERT ...;`) or **"Bulk"** (`INSERT ... VALUES (...), (...);`) syntax optimizations.
+- **Data validation warnings** for mismatching column sizes.
 
-### Table to SQL Editor
+### 5. Table → SQL Interactive Grid
+- A spreadsheet-like grid system that allows you to manually create, edit, or import rows of data.
+- Generates clean bulk inserts. You can also import existing `INSERT` scripts to view and modify the data visually.
 
-- Create a table-like grid with:
-  - Editable table name
-  - Add/remove columns
-  - Add/remove rows
-  - Editable cell values
-- Generate bulk `INSERT INTO ... VALUES (...)` SQL from the grid
-- Import `.sql` files (currently supports single `INSERT INTO table (cols...) VALUES (...),(...);` format)
-- Edit imported values in tabular mode and regenerate updated SQL
-- Download generated SQL as a `.sql` file
+### 6. SQL Power Tools
+- **Schema Diff Engine**: Input two `CREATE TABLE` definitions to instantly identify missing columns, type anomalies, and structural differences.
+- **SQL Beautifier**: Fast, browser-native SQL code formatting to clean up messy queries.
 
-## 🛠️ Tech Stack
+### 7. Dataset Formatter
+- Transform raw lists of text (like IDs or emails) into single lines wrapped properly for SQL clauses (e.g. `IN ('id1', 'id2')`).
+- Intelligent options: deduplicate, sort, trim whitespace, case-insensitive deduplication, and conditional quote escaping.
 
-- **Frontend Framework**: React.js 19 powered by Vite
-- **Language**: TypeScript
-- **Routing**: React Router DOM (v7)
+### 8. Template Library
+- Save queries, mutations, or complete schemas as persistent Templates to jumpstart your future sessions. 
 
-## Run locally
+---
+
+## 🛠️ Tech Stack & Architecture
+
+- **Frontend Framework**: React.js 19 powered by Vite.
+- **Language**: TypeScript (Strict typing with comprehensive discriminated unions for SQL concepts).
+- **Architecture**: Domain-Driven Design (DDD). We map operations into cleanly separated Domain, Application/UseCase, and Presentation layers.
+- **State Management**: Deep hook abstractions and URL-encoded serialization buffers.
+- **Theming**: Premium glassmorphism UI, Dark/Light modes, with custom accessible `<dialog>` components and CSS Grid layouts.
+
+---
+
+## 🚀 Running Locally
 
 ```bash
 npm install
 npm run dev
 ```
 
-Vite will print the local URL (typically `http://localhost:8104/`).
+Vite will start the server and print a local URL (typically `http://localhost:8104/`).
 
-## Build / preview production build
-
+### Building for Production
 ```bash
 npm run build
 npm run preview
 ```
 
-## Lint
-
+### Static Analysis
 ```bash
 npm run lint
 ```
 
-## Support & Recognition
+---
 
-If you find this project helpful and want to support its continued development, the best way is through **recognition**:
+## 🤝 AI Configuration
+
+QueryCanvas integrates with Google's Gemini API for its Smart SQL AI features.
+1. Obtain an API key from [Google AI Studio](https://aistudio.google.com/apikey).
+2. Inside your running QueryCanvas app, click the **⚙️ (Settings) window**.
+3. Input your API key. (Keys are securely saved to your browser's private `localStorage`).
+
+> *If no key is configured, the app will gracefully fall back to a mock mode that only recognizes a few hardcoded topics (`users`, `orders`, `products`).*
+
+---
+
+## ❤️ Support & Recognition
+
+If you find this project helpful and want to support its continued development:
 
 1. **Attribution:** Please keep the original copyright notices intact in the code. If you use this tool or its code in a public project, a shoutout or a link back to this repository is highly appreciated!
-2. **Contribute Code:** We welcome pull requests! Check out our [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines on how to help build this tool.
-3. **Star the Repo:** Giving the project a ⭐️ on GitHub helps others find it and gives the author recognition.
+2. **Contribute Code:** We welcome pull requests! Check out our `CONTRIBUTING.md` for guidelines on how to help build this tool.
+3. **Star the Repo:** Giving the project a 🌟 on GitHub helps others find it and signals recognition to the author.
 
 ## License
 

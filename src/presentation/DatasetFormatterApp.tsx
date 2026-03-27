@@ -11,7 +11,7 @@ import { usePageTitle } from '../application/usePageTitle'
 const datasetDelimiterOptions: Array<{ label: string; value: DatasetDelimiter }> = [
   { label: 'Comma (,)', value: ',' },
   { label: 'Semicolon (;)', value: ';' },
-  { label: 'Tab (\\t)', value: '\t' },
+  { label: 'Tab (\u005ct)', value: '\t' },
   { label: 'Pipe (|)', value: '|' },
   { label: 'Space ( )', value: ' ' },
 ]
@@ -26,7 +26,7 @@ const datasetWrapOptions: Array<{ label: string; value: DatasetOutputWrap }> = [
   { label: 'SQL IN (...)', value: 'in' },
 ]
 
-export function DatasetFormatterApp({ useCases }: { useCases: AppUseCases }) {
+export function DatasetFormatterApp({ useCases }: { readonly useCases: AppUseCases }) {
   usePageTitle('Dataset Formatter')
   const [datasetInput, setDatasetInput] = useState<string>('123\n234')
   const [datasetDelimiter, setDatasetDelimiter] = useState<DatasetDelimiter>(',')
@@ -126,8 +126,10 @@ export function DatasetFormatterApp({ useCases }: { useCases: AppUseCases }) {
             ))}
           </select>
         </label>
+      </div>
 
-        <label className="checkbox">
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem 1.5rem', marginBottom: '0.75rem' }}>
+        <label className="checkbox" style={{ marginTop: 0 }}>
           <input
             type="checkbox"
             checked={datasetTrimWhitespace}
@@ -136,7 +138,7 @@ export function DatasetFormatterApp({ useCases }: { useCases: AppUseCases }) {
           <span>Trim whitespace</span>
         </label>
 
-        <label className="checkbox">
+        <label className="checkbox" style={{ marginTop: 0 }}>
           <input
             type="checkbox"
             checked={datasetEscapeQuotes}
@@ -146,7 +148,7 @@ export function DatasetFormatterApp({ useCases }: { useCases: AppUseCases }) {
           <span>Escape quotes inside values</span>
         </label>
 
-        <label className="checkbox">
+        <label className="checkbox" style={{ marginTop: 0 }}>
           <input
             type="checkbox"
             checked={datasetRemoveEmptyLines}
@@ -154,7 +156,8 @@ export function DatasetFormatterApp({ useCases }: { useCases: AppUseCases }) {
           />
           <span>Remove empty lines</span>
         </label>
-        <label className="checkbox">
+
+        <label className="checkbox" style={{ marginTop: 0 }}>
           <input
             type="checkbox"
             checked={datasetRemoveDuplicates}
@@ -162,7 +165,8 @@ export function DatasetFormatterApp({ useCases }: { useCases: AppUseCases }) {
           />
           <span>Remove duplicates</span>
         </label>
-        <label className="checkbox">
+
+        <label className="checkbox" style={{ marginTop: 0 }}>
           <input
             type="checkbox"
             checked={datasetDedupeCaseInsensitive}
@@ -171,7 +175,8 @@ export function DatasetFormatterApp({ useCases }: { useCases: AppUseCases }) {
           />
           <span>Case-insensitive dedupe</span>
         </label>
-        <label className="checkbox">
+
+        <label className="checkbox" style={{ marginTop: 0 }}>
           <input
             type="checkbox"
             checked={datasetSortAscending}
@@ -203,13 +208,34 @@ export function DatasetFormatterApp({ useCases }: { useCases: AppUseCases }) {
           rows={6}
         />
       </label>
-      <button
-        type="button"
-        className="copy"
-        onClick={() => navigator.clipboard.writeText(datasetOutput)}
-      >
-        Copy output
-      </button>
+      <div style={{ display: 'flex', gap: '0.5rem', marginTop: '1rem', alignItems: 'stretch' }}>
+        <button
+          type="button"
+          className="copy"
+          onClick={() => navigator.clipboard.writeText(datasetOutput)}
+          disabled={!datasetOutput}
+          style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', width: 'auto', margin: 0 }}
+        >
+          Copy Output
+        </button>
+        <button
+          type="button"
+          className="secondary"
+          onClick={() => {
+            const blob = new Blob([datasetOutput], { type: 'text/plain' })
+            const url = URL.createObjectURL(blob)
+            const a = document.createElement('a')
+            a.href = url
+            a.download = 'output.txt'
+            a.click()
+            URL.revokeObjectURL(url)
+          }}
+          disabled={!datasetOutput}
+          style={{ flex: 1 }}
+        >
+          ⬇ Download .txt
+        </button>
+      </div>
     </section>
   )
 }
