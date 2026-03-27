@@ -1,5 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&display=swap');
 
+/* ── Dark mode (default) ──────────────────────────────────────────────────── */
 :root {
   --text: #e2e8f0;
   --text-h: #f8fafc;
@@ -22,10 +23,41 @@
   --scrollbar-track: rgba(15, 23, 42, 0.55);
   --scrollbar-thumb: linear-gradient(180deg, rgba(192, 132, 252, 0.9), rgba(59, 130, 246, 0.9));
   --scrollbar-thumb-hover: linear-gradient(180deg, rgba(216, 180, 254, 0.98), rgba(96, 165, 250, 0.98));
-  
+  --theme-icon: '☀️';
+
   --sans: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   --heading: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   --mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+
+/* ── Light mode ───────────────────────────────────────────────────────────── */
+:root[data-theme="light"] {
+  --text: #334155;
+  --text-h: #0f172a;
+  --text-muted: #64748b;
+  --bg-gradient-start: #eef2ff;
+  --bg-gradient-end: #f0f9ff;
+  --panel-bg: rgba(255, 255, 255, 0.75);
+  --panel-border: rgba(0, 0, 0, 0.09);
+  --input-bg: rgba(255, 255, 255, 0.95);
+  --input-border: rgba(0, 0, 0, 0.14);
+  --input-focus: #7c3aed;
+  --code-bg: rgba(124, 58, 237, 0.06);
+  --accent: #7c3aed;
+  --accent-hover: #6d28d9;
+  --accent-gradient: linear-gradient(135deg, #7c3aed 0%, #2563eb 100%);
+  --danger-bg: rgba(239, 68, 68, 0.07);
+  --danger-text: #dc2626;
+  --danger-border: rgba(239, 68, 68, 0.25);
+  --shadow-lg: 0 10px 25px -5px rgba(0, 0, 0, 0.12), 0 8px 10px -6px rgba(0, 0, 0, 0.06);
+  --scrollbar-track: rgba(148, 163, 184, 0.2);
+  --scrollbar-thumb: linear-gradient(180deg, rgba(124, 58, 237, 0.65), rgba(37, 99, 235, 0.65));
+  --scrollbar-thumb-hover: linear-gradient(180deg, rgba(109, 40, 217, 0.9), rgba(29, 78, 216, 0.9));
+  --theme-icon: '🌙';
+}
+
+:root[data-theme="light"] body {
+  background: linear-gradient(135deg, var(--bg-gradient-start), var(--bg-gradient-end));
 }
 
 html,
@@ -54,6 +86,7 @@ body {
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  transition: background 0.3s ease, color 0.3s ease;
 }
 
 h1,

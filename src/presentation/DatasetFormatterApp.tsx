@@ -6,6 +6,7 @@ import type {
   DatasetOutputWrap,
 } from '../domain/dataset/DatasetFormatter'
 import type { AppUseCases } from '../compositionRoot'
+import { usePageTitle } from '../application/usePageTitle'
 
 const datasetDelimiterOptions: Array<{ label: string; value: DatasetDelimiter }> = [
   { label: 'Comma (,)', value: ',' },
@@ -26,6 +27,7 @@ const datasetWrapOptions: Array<{ label: string; value: DatasetOutputWrap }> = [
 ]
 
 export function DatasetFormatterApp({ useCases }: { useCases: AppUseCases }) {
+  usePageTitle('Dataset Formatter')
   const [datasetInput, setDatasetInput] = useState<string>('123\n234')
   const [datasetDelimiter, setDatasetDelimiter] = useState<DatasetDelimiter>(',')
   const [datasetQuoteStyle, setDatasetQuoteStyle] = useState<DatasetQuoteStyle>('none')

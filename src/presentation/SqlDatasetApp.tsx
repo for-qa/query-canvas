@@ -15,12 +15,13 @@ import type { AppUseCases } from '../compositionRoot'
 
 type SqlConditionDraft = Omit<SqlCondition, 'connector'> & {
   connector: 'AND' | 'OR'
+  id: string
 }
 
 const datasetDelimiterOptions: Array<{ label: string; value: DatasetDelimiter }> = [
   { label: 'Comma (,)', value: ',' },
   { label: 'Semicolon (;)', value: ';' },
-  { label: 'Tab (\\t)', value: '\t' },
+  { label: String.raw`Tab (\t)`, value: '\t' },
   { label: 'Pipe (|)', value: '|' },
   { label: 'Space ( )', value: ' ' },
 ]
@@ -43,12 +44,16 @@ const sqlOperators: Array<{ label: string; value: SqlConditionOperator }> = [
   { label: '<', value: '<' },
   { label: '<=', value: '<=' },
   { label: 'LIKE', value: 'LIKE' },
+  { label: 'NOT LIKE', value: 'NOT LIKE' },
+  { label: 'ILIKE', value: 'ILIKE' },
+  { label: 'NOT ILIKE', value: 'NOT ILIKE' },
   { label: 'IN', value: 'IN' },
+  { label: 'NOT IN', value: 'NOT IN' },
   { label: 'IS NULL', value: 'IS NULL' },
   { label: 'IS NOT NULL', value: 'IS NOT NULL' },
 ]
 
-export function SqlDatasetApp({ useCases }: { useCases: AppUseCases }) {
+export function SqlDatasetApp({ useCases }: { readonly useCases: AppUseCases }) {
   // Dataset formatter state
   const [datasetInput, setDatasetInput] = useState<string>('123\n234')
   const [datasetDelimiter, setDatasetDelimiter] = useState<DatasetDelimiter>(',')
@@ -127,18 +132,21 @@ export function SqlDatasetApp({ useCases }: { useCases: AppUseCases }) {
       value: row.value,
     }))
 
-    const orderBy =
-      sqlOrderByField.trim().length > 0
-        ? { field: sqlOrderByField.trim(), direction: sqlOrderByDirection }
-        : undefined
+    const orderByArr = sqlOrderByField.trim()
+      ? [{ field: sqlOrderByField.trim(), direction: sqlOrderByDirection }]
+      : []
 
     const query: SqlQuery = {
       table,
       columns,
+      distinct: false,
+      joins: [],
       where,
+      having: [],
       groupBy,
-      orderBy,
+      orderBy: orderByArr,
       limit: typeof limitParsed === 'number' && Number.isFinite(limitParsed) ? limitParsed : undefined,
+      offset: undefined,
       quoteIdentifiers: sqlQuoteIdentifiers,
       includeSemicolon: sqlIncludeSemicolon,
     }
@@ -158,11 +166,11 @@ export function SqlDatasetApp({ useCases }: { useCases: AppUseCases }) {
   ])
 
   function updateCondition(
-    index: number,
+    id: string,
     patch: Partial<SqlConditionDraft>
   ): void {
     setSqlWhere((prev) =>
-      prev.map((row, i) => (i === index ? { ...row, ...patch } : row))
+      prev.map((row) => (row.id === id ? { ...row, ...patch } : row))
     )
   }
 
@@ -170,7 +178,8 @@ export function SqlDatasetApp({ useCases }: { useCases: AppUseCases }) {
     setSqlWhere((prev) => [
       ...prev,
       {
-        connector: prev.length === 0 ? 'AND' : 'AND',
+        id: crypto.randomUUID(),
+        connector: 'AND',
         field: '',
         operator: '=',
         value: '',
@@ -178,8 +187,8 @@ export function SqlDatasetApp({ useCases }: { useCases: AppUseCases }) {
     ])
   }
 
-  function removeCondition(index: number): void {
-    setSqlWhere((prev) => prev.filter((_, i) => i !== index))
+  function removeCondition(id: string): void {
+    setSqlWhere((prev) => prev.filter((row) => row.id !== id))
   }
 
   return (
@@ -373,15 +382,22 @@ export function SqlDatasetApp({ useCases }: { useCases: AppUseCases }) {
             <div className="conditions">
               {sqlWhere.map((row, idx) => {
                 const valueDisabled = row.operator === 'IS NULL' || row.operator === 'IS NOT NULL'
+                let placeholderText = 'e.g. 18'
+                if (row.operator === 'IN' || row.operator === 'NOT IN') {
+                  placeholderText = 'e.g. 1,2,3'
+                } else if (row.operator.includes('LIKE')) {
+                  placeholderText = 'e.g. %test%'
+                }
+
                 return (
-                  <div className="conditionRow" key={idx}>
+                  <div className="conditionRow" key={row.id}>
                     {idx > 0 ? (
                       <label className="field small">
                         <span>Connector</span>
                         <select
                           value={row.connector}
                           onChange={(e) =>
-                            updateCondition(idx, {
+                            updateCondition(row.id, {
                               connector: e.target.value as 'AND' | 'OR',
                             })
                           }
@@ -397,7 +413,7 @@ export function SqlDatasetApp({ useCases }: { useCases: AppUseCases }) {
                       <input
                         data-testid={`sql-condition-field-${idx}`}
                         value={row.field}
-                        onChange={(e) => updateCondition(idx, { field: e.target.value })}
+                        onChange={(e) => updateCondition(row.id, { field: e.target.value })}
                         placeholder="e.g. age"
                       />
                     </label>
@@ -407,12 +423,14 @@ export function SqlDatasetApp({ useCases }: { useCases: AppUseCases }) {
                       <select
                         data-testid={`sql-condition-operator-${idx}`}
                         value={row.operator}
-                        onChange={(e) =>
-                          updateCondition(idx, {
-                            operator: e.target.value as SqlConditionOperator,
-                            value: valueDisabled ? row.value : row.value,
+                        onChange={(e) => {
+                          const newOp = e.target.value as SqlConditionOperator
+                          const newValueDisabled = newOp === 'IS NULL' || newOp === 'IS NOT NULL'
+                          updateCondition(row.id, {
+                            operator: newOp,
+                            value: newValueDisabled ? '' : row.value,
                           })
-                        }
+                        }}
                       >
                         {sqlOperators.map((op) => (
                           <option key={op.value} value={op.value}>
@@ -427,8 +445,8 @@ export function SqlDatasetApp({ useCases }: { useCases: AppUseCases }) {
                       <input
                         data-testid={`sql-condition-value-${idx}`}
                         value={row.value ?? ''}
-                        onChange={(e) => updateCondition(idx, { value: e.target.value })}
-                        placeholder={row.operator === 'IN' ? 'e.g. 1,2,3' : 'e.g. 18'}
+                        onChange={(e) => updateCondition(row.id, { value: e.target.value })}
+                        placeholder={placeholderText}
                         disabled={valueDisabled}
                       />
                     </label>
@@ -436,7 +454,7 @@ export function SqlDatasetApp({ useCases }: { useCases: AppUseCases }) {
                     <button
                       type="button"
                       className="danger"
-                      onClick={() => removeCondition(idx)}
+                      onClick={() => removeCondition(row.id)}
                       aria-label={`Remove condition ${idx + 1}`}
                     >
                       Remove

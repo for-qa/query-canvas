@@ -1,4 +1,5 @@
 import { useMemo, useRef, useState } from 'react'
+import { usePageTitle } from '../application/usePageTitle'
 
 type ParsedInsert = {
   tableName: string
@@ -13,6 +14,7 @@ const defaultRows = [
 ]
 
 export function SqlTableEditorApp() {
+  usePageTitle('Table → SQL')
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [tableName, setTableName] = useState<string>('users')
   const [columns, setColumns] = useState<string[]>(defaultColumns)
