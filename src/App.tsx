@@ -8,27 +8,32 @@ import { SqlTableEditorApp } from './presentation/SqlTableEditorApp'
 import { SqlDdlBuilderApp } from './presentation/SqlDdlBuilderApp'
 import { SqlAlterTableApp } from './presentation/SqlAlterTableApp'
 import { SqlDmlBuilderApp } from './presentation/SqlDmlBuilderApp'
-import { DialectProvider } from './presentation/DialectContext'
+import { SqlInsertBuilderApp } from './presentation/SqlInsertBuilderApp'
+import { DialectProvider } from './presentation/DialectProvider'
+import { ThemeProvider } from './presentation/ThemeProvider'
 
 const useCases = createAppUseCases()
 
 function App() {
   return (
-    <DialectProvider>
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Layout />}>
-            <Route index element={<Navigate to="/formatter" replace />} />
-            <Route path="formatter" element={<DatasetFormatterApp useCases={useCases} />} />
-            <Route path="sql" element={<SqlQueryBuilderApp useCases={useCases} />} />
-            <Route path="table-sql" element={<SqlTableEditorApp />} />
-            <Route path="ddl" element={<SqlDdlBuilderApp useCases={useCases} />} />
-            <Route path="alter-table" element={<SqlAlterTableApp useCases={useCases} />} />
-            <Route path="dml" element={<SqlDmlBuilderApp useCases={useCases} />} />
-          </Route>
-        </Routes>
-      </BrowserRouter>
-    </DialectProvider>
+    <ThemeProvider>
+      <DialectProvider>
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<Layout />}>
+              <Route index element={<Navigate to="/formatter" replace />} />
+              <Route path="formatter" element={<DatasetFormatterApp useCases={useCases} />} />
+              <Route path="insert" element={<SqlInsertBuilderApp useCases={useCases} />} />
+              <Route path="sql" element={<SqlQueryBuilderApp useCases={useCases} />} />
+              <Route path="table-sql" element={<SqlTableEditorApp />} />
+              <Route path="ddl" element={<SqlDdlBuilderApp useCases={useCases} />} />
+              <Route path="alter-table" element={<SqlAlterTableApp useCases={useCases} />} />
+              <Route path="dml" element={<SqlDmlBuilderApp useCases={useCases} />} />
+            </Route>
+          </Routes>
+        </BrowserRouter>
+      </DialectProvider>
+    </ThemeProvider>
   )
 }
 

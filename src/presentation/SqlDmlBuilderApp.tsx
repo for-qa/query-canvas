@@ -7,6 +7,7 @@ import type { AppUseCases } from '../compositionRoot'
 import { usePageTitle } from '../application/usePageTitle'
 import { downloadSql } from '../application/downloadSql'
 import { useQueryHistory } from '../application/useQueryHistory'
+import { SqlHighlighter } from './components/SqlHighlighter'
 
 type ConditionDraft = Omit<SqlCondition, 'connector'> & { connector: SqlConditionConnector; id: string }
 type SetClauseDraft = { id: string; column: string; value: string }
@@ -154,7 +155,10 @@ export function SqlDmlBuilderApp({ useCases }: { readonly useCases: AppUseCases 
       </div>
 
       <div className="divider" />
-      <label className="field sqlQueryOutputField"><span>Generated SQL</span><textarea value={sqlOutput} readOnly rows={6} /></label>
+      <div className="field sqlQueryOutputField">
+        <span>Generated SQL</span>
+        <SqlHighlighter code={sqlOutput} />
+      </div>
       <div style={{ display: 'flex', gap: '0.5rem' }}>
         <button type="button" className="copy" onClick={handleCopy} disabled={!sqlOutput} style={{ flex: 1 }}>Copy SQL</button>
         <button type="button" className="secondary" onClick={() => downloadSql(sqlOutput, `dml_${mode.toLowerCase()}_${table || 'table'}`)} disabled={!sqlOutput}>⬇ Download .sql</button>

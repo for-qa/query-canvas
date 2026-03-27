@@ -13,6 +13,8 @@ import { useDialect } from './DialectContext'
 import { usePageTitle } from '../application/usePageTitle'
 import { downloadSql } from '../application/downloadSql'
 import { useQueryHistory } from '../application/useQueryHistory'
+import { SqlHighlighter } from './components/SqlHighlighter'
+import { parseCreateTable } from '../application/schemaParser'
 
 type ColumnDraft = SqlCreateTableColumn & { id: string }
 type DdlMode = 'table' | 'database' | 'drop-table' | 'drop-database' | 'truncate'
@@ -64,6 +66,25 @@ export function SqlDdlBuilderApp({ useCases }: { readonly useCases: AppUseCases 
   const { dialect } = useDialect()
   const { addEntry } = useQueryHistory()
   const [mode, setMode] = useState<DdlMode>('table')
+  
+  const [importString, setImportString] = useState('')
+  const [showImport, setShowImport] = useState(false)
+
+  const handleImport = useCallback(() => {
+    if (!importString.trim()) return
+    const parsed = parseCreateTable(importString)
+    if (parsed) {
+      setTableName(parsed.tableName)
+      setColumns(parsed.columns.map(col => ({ ...col, id: crypto.randomUUID() })))
+      setTableIfNotExists(parsed.ifNotExists)
+      setTableIncludeSemicolon(parsed.includeSemicolon)
+      setShowImport(false)
+      setImportString('')
+      alert('Schema imported successfully!')
+    } else {
+      alert('Could not parse CREATE TABLE. Check the format.')
+    }
+  }, [importString])
 
   // ── CREATE TABLE state ──────────────────────────────────────────────────────
   const [tableName, setTableName] = useState('users')
@@ -132,15 +153,23 @@ export function SqlDdlBuilderApp({ useCases }: { readonly useCases: AppUseCases 
       dropDbName, dropDbIfExists, dropDbSemicolon,
       truncateName, truncateSemicolon, dialect, useCases])
 
+  const isDestructive = mode === 'drop-table' || mode === 'drop-database' || mode === 'truncate'
+
   const handleCopy = useCallback(() => {
     if (!sqlOutput) return
+    if (isDestructive && !globalThis.confirm('This is a destructive operation. Are you sure you want to copy this SQL?')) {
+      return
+    }
     void navigator.clipboard.writeText(sqlOutput)
     addEntry(sqlOutput, MODE_LABELS[mode])
-  }, [sqlOutput, addEntry, mode])
+  }, [sqlOutput, addEntry, mode, isDestructive])
 
   const handleDownload = useCallback(() => {
+    if (isDestructive && !globalThis.confirm('This is a destructive operation. Are you sure you want to download this SQL?')) {
+      return
+    }
     downloadSql(sqlOutput, `ddl_${mode}`)
-  }, [sqlOutput, mode])
+  }, [sqlOutput, mode, isDestructive])
 
   // ── Column helpers ──────────────────────────────────────────────────────────
   const addColumn = useCallback(() => setColumns((p) => [...p, defaultColumn()]), [])
@@ -163,7 +192,7 @@ export function SqlDdlBuilderApp({ useCases }: { readonly useCases: AppUseCases 
       <p className="hint">Generate CREATE, DROP, and TRUNCATE statements.</p>
 
       {/* ── Mode buttons ─────────────────────────────────── */}
-      <div className="row" style={{ marginBottom: '1rem', flexWrap: 'wrap', gap: '0.4rem' }}>
+      <div className="row" style={{ marginBottom: '1rem', flexWrap: 'wrap', gap: '0.4rem', alignItems: 'center' }}>
         {(Object.entries(MODE_LABELS) as [DdlMode, string][]).map(([m, label]) => (
           <button key={m} type="button"
             className={mode === m ? 'copy' : 'secondary'}
@@ -172,7 +201,27 @@ export function SqlDdlBuilderApp({ useCases }: { readonly useCases: AppUseCases 
             {label}
           </button>
         ))}
+        <button type="button" className="secondary" 
+          style={{ width: 'auto', marginTop: 0, padding: '0.5rem 0.9rem', fontSize: '0.85rem', marginLeft: 'auto' }}
+          onClick={() => setShowImport(!showImport)}>
+          {showImport ? 'Cancel Import' : 'Import from SQL'}
+        </button>
       </div>
+
+      {showImport && (
+        <div style={{ marginBottom: '2rem', padding: '1rem', background: 'var(--input-bg)', borderRadius: '8px', border: '1px solid var(--panel-border)' }}>
+          <label className="field">
+            <span>Paste <code>CREATE TABLE</code> SQL</span>
+            <textarea 
+              value={importString} 
+              onChange={(e) => setImportString(e.target.value)} 
+              rows={5} 
+              placeholder="CREATE TABLE users (id INT, name VARCHAR(255));"
+            />
+          </label>
+          <button type="button" className="copy" onClick={handleImport} style={{ marginTop: '0.5rem' }}>Parse & Import Schema</button>
+        </div>
+      )}
 
       {/* ── CREATE TABLE ─────────────────────────────────── */}
       {mode === 'table' && (
@@ -260,10 +309,10 @@ export function SqlDdlBuilderApp({ useCases }: { readonly useCases: AppUseCases 
 
       {/* ── Output ───────────────────────────────────────── */}
       <div className="divider" />
-      <label className="field sqlQueryOutputField">
+      <div className="field sqlQueryOutputField">
         <span>Generated SQL</span>
-        <textarea value={sqlOutput} readOnly rows={7} />
-      </label>
+        <SqlHighlighter code={sqlOutput} />
+      </div>
       <div style={{ display: 'flex', gap: '0.5rem' }}>
         <button type="button" className="copy" onClick={handleCopy} disabled={!sqlOutput} style={{ flex: 1 }}>Copy SQL</button>
         <button type="button" className="secondary" onClick={handleDownload} disabled={!sqlOutput} style={{ flex: 'none' }}>⬇ Download .sql</button>

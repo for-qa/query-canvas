@@ -1,4 +1,4 @@
-import { useMemo, useState, useCallback } from 'react'
+import { useMemo, useState, useCallback, useEffect } from 'react'
 import type {
   SqlCondition,
   SqlConditionOperator,
@@ -12,6 +12,22 @@ import type { AppUseCases } from '../compositionRoot'
 import { useQueryHistory } from '../application/useQueryHistory'
 import { usePageTitle } from '../application/usePageTitle'
 import { downloadSql } from '../application/downloadSql'
+import { SqlHighlighter } from './components/SqlHighlighter'
+import { encodeState, decodeState } from '../application/urlStateUtils'
+
+interface ShareState {
+  table: string
+  columns: string
+  distinct: boolean
+  joins: JoinDraft[]
+  where: ConditionDraft[]
+  having: ConditionDraft[]
+  groupBy: string
+  limit: string
+  offset: string
+  quoteIdentifiers: boolean
+  semicolon: boolean
+}
 
 type ConditionDraft = Omit<SqlCondition, 'connector'> & { connector: 'AND' | 'OR'; id: string }
 type JoinDraft = SqlJoin & { id: string }
@@ -134,6 +150,27 @@ export function SqlQueryBuilderApp({ useCases }: { readonly useCases: AppUseCase
   const [showHistory, setShowHistory] = useState(false)
 
   const { history, addEntry, removeEntry, clearHistory } = useQueryHistory()
+
+  useEffect(() => {
+    const params = new URLSearchParams(globalThis.location.search)
+    const q = params.get('q')
+    if (q) {
+      const state = decodeState<ShareState>(q)
+      if (state) {
+        if (state.table) setSqlTable(state.table)
+        if (state.columns) setSqlColumns(state.columns)
+        if (state.distinct !== undefined) setSqlDistinct(state.distinct)
+        if (state.joins) setSqlJoins(state.joins.map(j => ({ ...j, id: crypto.randomUUID() })))
+        if (state.where) setSqlWhere(state.where.map(w => ({ ...w, id: crypto.randomUUID() })))
+        if (state.having) setSqlHaving(state.having.map(h => ({ ...h, id: crypto.randomUUID() })))
+        if (state.groupBy) setSqlGroupBy(state.groupBy)
+        if (state.limit) setSqlLimit(state.limit)
+        if (state.offset) setSqlOffset(state.offset)
+        if (state.quoteIdentifiers !== undefined) setSqlQuoteIdentifiers(state.quoteIdentifiers)
+        if (state.semicolon !== undefined) setSqlIncludeSemicolon(state.semicolon)
+      }
+    }
+  }, [])
 
   const sqlOutput = useMemo(() => {
     const table = sqlTable.trim()
@@ -353,15 +390,31 @@ export function SqlQueryBuilderApp({ useCases }: { readonly useCases: AppUseCase
       </div>
 
       {/* ── Output ───────────────────────────────────────── */}
-      <label className="field sqlQueryOutputField">
+      <div className="field sqlQueryOutputField">
         <span>Generated SQL</span>
-        <textarea data-testid="sql-output" value={sqlOutput} readOnly rows={8} />
-      </label>
+        <SqlHighlighter code={sqlOutput} />
+      </div>
 
       <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
         <button type="button" className="copy"
           onClick={handleCopy} disabled={!sqlOutput} style={{ flex: 1 }}>
           Copy SQL
+        </button>
+        <button type="button" className="secondary"
+          onClick={() => {
+            const state = {
+              table: sqlTable, columns: sqlColumns, distinct: sqlDistinct,
+              joins: sqlJoins, where: sqlWhere, having: sqlHaving,
+              groupBy: sqlGroupBy, limit: sqlLimit, offset: sqlOffset,
+              quoteIdentifiers: sqlQuoteIdentifiers, semicolon: sqlIncludeSemicolon
+            }
+            const encoded = encodeState(state)
+            const url = new URL(globalThis.location.href)
+            url.searchParams.set('q', encoded)
+            void navigator.clipboard.writeText(url.toString())
+            alert('Shareable link copied to clipboard!')
+          }} disabled={!sqlOutput}>
+          🔗 Share Link
         </button>
         <button type="button" className="secondary"
           onClick={() => downloadSql(sqlOutput, `select_${sqlTable || 'query'}`)} disabled={!sqlOutput}>

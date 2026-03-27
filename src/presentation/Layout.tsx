@@ -1,40 +1,14 @@
-import { useState, useCallback } from 'react'
 import { Outlet, NavLink } from 'react-router-dom'
 import { useDialect } from './DialectContext'
 import { DIALECT_CONFIGS } from '../domain/sql/SqlDialect'
 import type { SqlDialect } from '../domain/sql/SqlDialect'
 import './Layout.css'
 
-const THEME_KEY = 'querycanvas_theme'
-
-function loadTheme(): 'dark' | 'light' {
-  const saved = localStorage.getItem(THEME_KEY)
-  return saved === 'light' ? 'light' : 'dark'
-}
-
-function applyTheme(theme: 'dark' | 'light') {
-  if (theme === 'light') {
-    document.documentElement.dataset.theme = 'light'
-  } else {
-    delete document.documentElement.dataset.theme
-  }
-}
-
-// Apply on first render (before React renders)
-applyTheme(loadTheme())
+import { useTheme } from './ThemeContext'
 
 export function Layout() {
-  const [theme, setTheme] = useState<'dark' | 'light'>(loadTheme)
+  const { theme, toggleTheme } = useTheme()
   const { dialect, setDialect } = useDialect()
-
-  const toggleTheme = useCallback(() => {
-    setTheme((prev) => {
-      const next = prev === 'dark' ? 'light' : 'dark'
-      applyTheme(next)
-      localStorage.setItem(THEME_KEY, next)
-      return next
-    })
-  }, [])
 
   return (
     <div className="dashboard">
@@ -48,6 +22,9 @@ export function Layout() {
           <nav className="tabs" aria-label="Primary navigation">
             <NavLink to="/formatter" className={({ isActive }) => (isActive ? 'tab active' : 'tab')}>
               Dataset Formatter
+            </NavLink>
+            <NavLink to="/insert" className={({ isActive }) => (isActive ? 'tab active' : 'tab')}>
+              INSERT Builder
             </NavLink>
             <NavLink to="/sql" className={({ isActive }) => (isActive ? 'tab active' : 'tab')}>
               SQL Builder
