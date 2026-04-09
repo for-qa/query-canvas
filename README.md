@@ -44,6 +44,20 @@ A comprehensive **visual SQL development suite** built with React + TypeScript +
 ### 8. Template Library
 - Save queries, mutations, or complete schemas as persistent Templates to jumpstart your future sessions. 
 
+### 9. Spreadsheet → SQL Import
+- **File Upload:** Drag and drop `.csv` and `.xlsx` (Excel) files directly into the browser.
+- **Multi-Sheet Support:** Seamlessly switch between different sheets/tabs within an Excel workbook without needing to re-upload.
+- **Data Preview & Selection:** Preview your data in a grid and visually select/deselect specific columns to include in your queries.
+- **Instant Generation:** Generate `SELECT` statements (for querying schemas) or massive `INSERT` workloads directly from spreadsheet rows.
+
+### 10. Multi-Format Outboard Engine
+- Almost every tool in QueryCanvas features a **multi-format export dropdown**.
+- Instantly export your generated schemas, queries, or data as:
+  - Standard **`.sql`** files
+  - Raw **`.txt`** files
+  - Seamlessly escaped **`.csv`** payloads
+  - Auto-sized **`.xlsx`** Excel Workbooks natively rendered right in the browser.
+
 ---
 
 ## 🛠️ Tech Stack & Architecture

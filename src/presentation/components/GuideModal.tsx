@@ -242,6 +242,29 @@ export function GuideModal({ onClose }: { readonly onClose: () => void }) {
         </div>
       )
       break
+    case '/spreadsheet':
+      title = 'Spreadsheet → SQL Guide'
+      description = 'Generate full SELECT or INSERT statements directly from your spreadsheet files.'
+      content = (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+          <div>
+            <h4 style={{ margin: '0 0 0.5rem', color: 'var(--accent)' }}>What it does</h4>
+            <p style={{ margin: 0, fontSize: '0.9rem', lineHeight: '1.5' }}>
+              Upload a <code>.csv</code> or <code>.xlsx</code> file, preview your data, select individual columns and a specific sheet to automatically generate SQL code to either read from or write to your table.
+            </p>
+          </div>
+          <div>
+            <h4 style={{ margin: '0 0 0.5rem', color: 'var(--accent)' }}>How to use</h4>
+            <ul style={{ margin: 0, paddingLeft: '1.2rem', fontSize: '0.9rem', lineHeight: '1.5' }}>
+              <li><strong>Upload Data:</strong> Drag and drop your file into the designated area. If it's a multi-sheet <code>.xlsx</code> file, select the correct tab to parse its rows.</li>
+              <li><strong>Select columns:</strong> Check or uncheck columns from the table headers to control what data is included in your query.</li>
+              <li><strong>Configure SQL Options:</strong> Set your target <strong>Table Name</strong>, choose between maintaining existing data (<code>INSERT</code>) or querying new fields (<code>SELECT</code>), and toggle identifiers quoting.</li>
+              <li>Click <strong>Generate Query</strong> to get a dialect-aware query from your spreadsheet, instantly downloaded or saved to your query history.</li>
+            </ul>
+          </div>
+        </div>
+      )
+      break
     default:
       content = <p>No specific guide available for this page.</p>
   }

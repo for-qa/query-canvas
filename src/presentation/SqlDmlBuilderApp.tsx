@@ -5,7 +5,7 @@ import type {
 } from '../domain/sql/SqlModels'
 import type { AppUseCases } from '../compositionRoot'
 import { usePageTitle } from '../application/usePageTitle'
-import { downloadSql } from '../application/downloadSql'
+import { ExportButton } from './components/ExportButton'
 import { useQueryHistory } from '../application/useQueryHistory'
 import { SqlHighlighter } from './components/SqlHighlighter'
 import { useSavedTemplates } from '../application/useSavedTemplates'
@@ -173,7 +173,7 @@ export function SqlDmlBuilderApp({ useCases }: { readonly useCases: AppUseCases 
       <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
         <button type="button" className="copy" onClick={handleCopy} disabled={!sqlOutput} style={{ flex: 1 }}>Copy SQL</button>
         <button type="button" className="secondary" onClick={handleSaveTemplate} disabled={!sqlOutput} style={{ flex: 1 }}>📁 Save Template</button>
-        <button type="button" className="secondary" onClick={() => downloadSql(sqlOutput, `dml_${mode.toLowerCase()}_${table || 'table'}`)} disabled={!sqlOutput} style={{ flex: 1 }}>⬇ Download .sql</button>
+        <ExportButton content={sqlOutput} filenameBase={`dml_${mode.toLowerCase()}_${table || 'table'}`} disabled={!sqlOutput} label="Download" style={{ flex: 1 }} />
       </div>
     </section>
   )

@@ -11,6 +11,7 @@ import { SqlDmlBuilderApp } from './presentation/SqlDmlBuilderApp'
 import { SqlInsertBuilderApp } from './presentation/SqlInsertBuilderApp'
 import { TemplateLibraryApp } from './presentation/TemplateLibraryApp'
 import { SqlToolsApp } from './presentation/SqlToolsApp'
+import { SpreadsheetImportApp } from './presentation/SpreadsheetImportApp'
 import { DialectProvider } from './presentation/DialectProvider'
 import { ThemeProvider } from './presentation/ThemeProvider'
 
@@ -33,6 +34,7 @@ function App() {
               <Route path="ddl" element={<SqlDdlBuilderApp useCases={useCases} />} />
               <Route path="alter-table" element={<SqlAlterTableApp useCases={useCases} />} />
               <Route path="dml" element={<SqlDmlBuilderApp useCases={useCases} />} />
+              <Route path="spreadsheet" element={<SpreadsheetImportApp />} />
             </Route>
           </Routes>
         </BrowserRouter>

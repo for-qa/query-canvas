@@ -53,6 +53,9 @@ export function Layout() {
             <NavLink to="/dml" className={({ isActive }) => (isActive ? 'tab active' : 'tab')}>
               UPDATE / DELETE
             </NavLink>
+            <NavLink to="/spreadsheet" className={({ isActive }) => (isActive ? 'tab active' : 'tab')}>
+              📂 Spreadsheet → SQL
+            </NavLink>
           </nav>
 
           <div className="topbarControls">

@@ -11,7 +11,9 @@ import type {
 import type { AppUseCases } from '../compositionRoot'
 import { useDialect } from './DialectContext'
 import { usePageTitle } from '../application/usePageTitle'
-import { downloadSql } from '../application/downloadSql'
+import { exportFile } from '../application/exportFile'
+import { ExportButton } from './components/ExportButton'
+import type { ExportFormat } from '../application/exportFile'
 import { useQueryHistory } from '../application/useQueryHistory'
 import { SqlHighlighter } from './components/SqlHighlighter'
 import { parseCreateTable } from '../application/schemaParser'
@@ -164,7 +166,7 @@ export function SqlDdlBuilderApp({ useCases }: { readonly useCases: AppUseCases 
     columns.filter(c => c.name.trim()).forEach(col => {
       const typeStr = col.length ? `${col.type}_${col.length}` : col.type
       const pk = col.primaryKey ? 'PK' : ''
-      chart += `        ${col.name.replaceAll(/\s+/g, '_')} ${typeStr.replace(/[^a-zA-Z0-9_]/g, '')} ${pk}\n`
+      chart += `        ${col.name.replaceAll(/\s+/g, '_')} ${typeStr.replaceAll(/\W/g, '')} ${pk}\n`
     })
     chart += '    }\n'
     return chart
@@ -191,11 +193,11 @@ export function SqlDdlBuilderApp({ useCases }: { readonly useCases: AppUseCases 
     }
   }, [sqlOutput, tableName, mode, saveTemplate])
 
-  const handleDownload = useCallback(() => {
+  const handleDownload = useCallback((format: ExportFormat) => {
     if (isDestructive && !globalThis.confirm('This is a destructive operation. Are you sure you want to download this SQL?')) {
       return
     }
-    downloadSql(sqlOutput, `ddl_${mode}`)
+    exportFile(sqlOutput, `ddl_${mode}`, format)
   }, [sqlOutput, mode, isDestructive])
 
   // ── Column helpers ──────────────────────────────────────────────────────────
@@ -362,9 +364,7 @@ export function SqlDdlBuilderApp({ useCases }: { readonly useCases: AppUseCases 
         <button type="button" className="secondary" onClick={handleSaveTemplate} disabled={!sqlOutput} style={{ flex: 1 }}>
           📁 Save Template
         </button>
-        <button type="button" className="secondary" onClick={handleDownload} disabled={!sqlOutput} style={{ flex: 1 }}>
-          ⬇ Download .sql
-        </button>
+        <ExportButton content={sqlOutput} filenameBase={`ddl_${mode}`} disabled={!sqlOutput} label="Download" onExport={handleDownload} style={{ flex: 1 }} />
       </div>
     </section>
   )

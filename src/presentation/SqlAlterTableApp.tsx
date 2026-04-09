@@ -8,7 +8,7 @@ import type {
 } from '../domain/sql/SqlModels'
 import type { AppUseCases } from '../compositionRoot'
 import { usePageTitle } from '../application/usePageTitle'
-import { downloadSql } from '../application/downloadSql'
+import { ExportButton } from './components/ExportButton'
 import { useQueryHistory } from '../application/useQueryHistory'
 import { SqlHighlighter } from './components/SqlHighlighter'
 
@@ -208,7 +208,7 @@ export function SqlAlterTableApp({ useCases }: { readonly useCases: AppUseCases 
       </div>
       <div style={{ display: 'flex', gap: '0.5rem' }}>
         <button type="button" className="copy" onClick={handleCopy} disabled={!sqlOutput} style={{ flex: 1 }}>Copy SQL</button>
-        <button type="button" className="secondary" onClick={() => downloadSql(sqlOutput, `alter_${tableName || 'table'}`)} disabled={!sqlOutput}>⬇ Download .sql</button>
+        <ExportButton content={sqlOutput} filenameBase={`alter_${tableName || 'table'}`} disabled={!sqlOutput} label="Download" />
       </div>
     </section>
   )

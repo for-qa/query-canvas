@@ -1,5 +1,6 @@
 import { useMemo, useRef, useState } from 'react'
 import { usePageTitle } from '../application/usePageTitle'
+import { ExportButton } from './components/ExportButton'
 
 type ParsedInsert = {
   tableName: string
@@ -71,15 +72,7 @@ export function SqlTableEditorApp() {
     }
   }
 
-  function downloadSql() {
-    const blob = new Blob([generatedSql], { type: 'text/sql;charset=utf-8' })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = `${sanitizeIdentifier(tableName) || 'query'}.sql`
-    a.click()
-    URL.revokeObjectURL(url)
-  }
+
 
   return (
     <section className="panel sqlTableEditorPanel">
@@ -203,9 +196,7 @@ export function SqlTableEditorApp() {
           >
             Copy SQL
           </button>
-          <button type="button" className="secondary" onClick={downloadSql} disabled={!generatedSql}>
-            Download .sql
-          </button>
+          <ExportButton content={generatedSql} filenameBase={sanitizeIdentifier(tableName) || 'query'} disabled={!generatedSql} label="Download" />
         </div>
       </div>
     </section>

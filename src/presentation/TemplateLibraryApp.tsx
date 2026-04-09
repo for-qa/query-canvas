@@ -2,7 +2,7 @@ import { useState, useCallback } from 'react'
 import { useSavedTemplates } from '../application/useSavedTemplates'
 import { usePageTitle } from '../application/usePageTitle'
 import { SqlHighlighter } from './components/SqlHighlighter'
-import { downloadSql } from '../application/downloadSql'
+import { ExportButton } from './components/ExportButton'
 
 /**
  * Page to view and manage all named templates saved from various tools.
@@ -142,8 +142,8 @@ export function TemplateLibraryApp() {
               </div>
               <div style={{ padding: '1rem', background: 'rgba(0,0,0,0.15)', display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
                 <button type="button" className="copy" onClick={() => handleCopy(t.sql)} style={{ flex: '1 1 auto', minWidth: '120px', padding: '0.6rem' }}>Copy SQL</button>
-                <div style={{ display: 'flex', gap: '0.5rem', flex: '0 0 auto' }}>
-                  <button type="button" className="secondary" onClick={() => downloadSql(t.sql, t.name)} style={{ flex: 'none', padding: '0.6rem', minWidth: '2.5rem' }} title="Download as .sql">⬇</button>
+                <div style={{ display: 'flex', gap: '0.5rem', flex: '0 0 auto', alignItems: 'center' }}>
+                  <ExportButton content={t.sql} filenameBase={t.name} label="Download" />
                   <button type="button" className="danger" onClick={() => deleteTemplate(t.id)} style={{ flex: 'none', padding: '0.6rem', minWidth: '2.5rem' }} title="Remove template">🗑</button>
                 </div>
               </div>

@@ -11,7 +11,8 @@ import type {
 import type { AppUseCases } from '../compositionRoot'
 import { useQueryHistory } from '../application/useQueryHistory'
 import { usePageTitle } from '../application/usePageTitle'
-import { downloadSql } from '../application/downloadSql'
+import { exportFile } from '../application/exportFile'
+import { ExportButton } from './components/ExportButton'
 import { SqlHighlighter } from './components/SqlHighlighter'
 import { encodeState, decodeState } from '../application/urlStateUtils'
 import { useSavedTemplates } from '../application/useSavedTemplates'
@@ -500,7 +501,7 @@ export function SqlQueryBuilderApp({ useCases }: { readonly useCases: AppUseCase
   // ── Keyboard shortcuts ──────────────────────────────────────────────────────
   useKeyboardShortcuts({
     'ctrl+enter': handleCopy,
-    'ctrl+shift+d': () => downloadSql(sqlOutput, `select_${sqlTable || 'query'}`),
+    'ctrl+shift+d': () => exportFile(sqlOutput, `select_${sqlTable || 'query'}`, 'sql'),
     'ctrl+k': () => aiPromptRef.current?.focus(),
   })
 
@@ -709,10 +710,7 @@ export function SqlQueryBuilderApp({ useCases }: { readonly useCases: AppUseCase
           }} disabled={!sqlOutput} title="Copy shareable URL" style={{ flex: 1 }}>
           🔗 Share Link
         </button>
-        <button type="button" className="secondary"
-          onClick={() => downloadSql(sqlOutput, `select_${sqlTable || 'query'}`)} disabled={!sqlOutput} style={{ flex: 1 }}>
-          ⬇ Download .sql
-        </button>
+        <ExportButton content={sqlOutput} filenameBase={`select_${sqlTable || 'query'}`} disabled={!sqlOutput} label="Download" style={{ flex: 1 }} />
       </div>
 
       {/* ── Mock Results ─────────────────────────────────── */}
