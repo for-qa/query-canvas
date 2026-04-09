@@ -84,8 +84,9 @@ export function SpreadsheetImportApp() {
   const [includeSemicolon, setIncludeSemicolon] = useState(true)
   const [insertMode, setInsertMode] = useState<'bulk' | 'multiple'>('bulk')
 
-  // Column selection
+  // Selection state
   const [selectedCols, setSelectedCols] = useState<Set<string>>(new Set())
+  const [selectedRows, setSelectedRows] = useState<Set<number>>(new Set())
   const [generated, setGenerated] = useState(false)
   const [sqlOutput, setSqlOutput] = useState('')
 
@@ -98,6 +99,7 @@ export function SpreadsheetImportApp() {
     setHeaders(h)
     setRows(r)
     setSelectedCols(new Set(h))
+    setSelectedRows(new Set(r.map((_, i) => i)))
     setGenerated(false)
     setSqlOutput('')
   }, [])
@@ -127,6 +129,7 @@ export function SpreadsheetImportApp() {
         setHeaders(h)
         setRows(r)
         setSelectedCols(new Set(h))
+        setSelectedRows(new Set(r.map((_, i) => i)))
         setTableName(baseName)
         setSheetNames([])
         setActiveSheet('')
@@ -190,11 +193,36 @@ export function SpreadsheetImportApp() {
     }
   }
 
+  function toggleRow(idx: number) {
+    setSelectedRows((prev) => {
+      const next = new Set(prev)
+      if (next.has(idx)) next.delete(idx); else next.add(idx)
+      return next
+    })
+  }
+
+  function toggleAllRows() {
+    if (selectedRows.size === rows.length) {
+      setSelectedRows(new Set())
+    } else {
+      setSelectedRows(new Set(rows.map((_, i) => i)))
+    }
+  }
+
+  function handleCellChange(rowIndex: number, colName: string, value: string) {
+    setRows((prev) => {
+      const next = [...prev]
+      next[rowIndex] = { ...next[rowIndex], [colName]: value }
+      return next
+    })
+  }
+
   // ── SQL generation ───────────────────────────────────────────────────────
   const activeCols = useMemo(() => headers.filter((h) => selectedCols.has(h)), [headers, selectedCols])
 
   function generateSql() {
-    if (!tableName.trim() || rows.length === 0 || activeCols.length === 0) return
+    const activeRows = rows.filter((_, i) => selectedRows.has(i))
+    if (!tableName.trim() || activeRows.length === 0 || activeCols.length === 0) return
 
     const tbl = quoteId ? quoteIdentifier(tableName.trim(), dialect) : tableName.trim()
     const cols = activeCols.map((c) => (quoteId ? quoteIdentifier(c, dialect) : c))
@@ -206,13 +234,13 @@ export function SpreadsheetImportApp() {
       sql = `SELECT ${cols.join(', ')}\nFROM ${tbl}${semi}`
     } else {
       if (insertMode === 'bulk') {
-        const valueSets = rows.map((row) => {
+        const valueSets = activeRows.map((row) => {
           const vals = activeCols.map((c) => toSqlValue(row[c] ?? ''))
           return `  (${vals.join(', ')})`
         })
         sql = `INSERT INTO ${tbl} (${cols.join(', ')})\nVALUES\n${valueSets.join(',\n')}${semi}`
       } else {
-        sql = rows.map((row) => {
+        sql = activeRows.map((row) => {
           const vals = activeCols.map((c) => toSqlValue(row[c] ?? ''))
           return `INSERT INTO ${tbl} (${cols.join(', ')}) VALUES (${vals.join(', ')})${semi}`
         }).join('\n')
@@ -321,7 +349,7 @@ export function SpreadsheetImportApp() {
                 </span>
               )}
               <span style={{ marginLeft: '0.75rem', fontSize: '0.8rem', fontWeight: 400, color: 'var(--text-muted)' }}>
-                {rows.length} rows · showing first {Math.min(rows.length, 50)}
+                {selectedRows.size} of {rows.length} rows · selected (displaying max 50)
               </span>
             </h3>
           </div>
@@ -329,6 +357,15 @@ export function SpreadsheetImportApp() {
             <table className="spreadsheetTable">
               <thead>
                 <tr>
+                  <th style={{ width: '40px', padding: 0 }}>
+                    <label className="colToggle" title="Select/Deselect all rows" style={{ height: '100%', display: 'flex', justifyContent: 'center' }}>
+                      <input
+                        type="checkbox"
+                        checked={selectedRows.size === rows.length && rows.length > 0}
+                        onChange={toggleAllRows}
+                      />
+                    </label>
+                  </th>
                   {headers.map((h) => (
                     <th key={h}>
                       <label className="colToggle" title={selectedCols.has(h) ? 'Click to deselect column' : 'Click to select column'}>
@@ -345,10 +382,31 @@ export function SpreadsheetImportApp() {
               </thead>
               <tbody>
                 {rows.slice(0, 50).map((row, i) => (
-                  <tr key={i} className={i % 2 === 0 ? '' : 'alt'}>
+                  <tr key={i} className={`${i % 2 === 0 ? '' : 'alt'} ${!selectedRows.has(i) ? 'dimmed' : ''}`}>
+                    <td style={{ textAlign: 'center', padding: 0 }}>
+                      <input
+                        type="checkbox"
+                        checked={selectedRows.has(i)}
+                        onChange={() => toggleRow(i)}
+                        title={`Toggle row ${i + 1}`}
+                        style={{ margin: 0, width: '0.95rem', height: '0.95rem', cursor: 'pointer', accentColor: 'var(--accent)' }}
+                      />
+                    </td>
                     {headers.map((h) => (
-                      <td key={h} className={selectedCols.has(h) ? '' : 'dimmed'}>
-                        {row[h] || <span style={{ color: 'var(--text-muted)', fontStyle: 'italic' }}>—</span>}
+                      <td key={h} className={selectedCols.has(h) ? '' : 'dimmed'} style={{ padding: 0 }}>
+                        <input
+                          type="text"
+                          value={row[h] ?? ''}
+                          onChange={(e) => handleCellChange(i, h, e.target.value)}
+                          disabled={!selectedRows.has(i)}
+                          style={{
+                            width: '100%', border: 'none', background: 'transparent',
+                            color: 'inherit', fontFamily: 'inherit', fontSize: '0.85rem',
+                            padding: '0.6rem 0.8rem', outline: 'none',
+                            opacity: selectedRows.has(i) && selectedCols.has(h) ? 1 : 0.5
+                          }}
+                          placeholder="—"
+                        />
                       </td>
                     ))}
                   </tr>
